@@ -3,35 +3,31 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const sequelize = require('./config/db');
 
-require('./models/student'); // Ensure model is registered
-
-const authRoutes = require('./routes/authRoutes');
-const adminRoutes = require('./routes/adminRoutes');
-const departmentRoutes = require('./routes/departmentRoutes');
-const studentRoutes = require('./routes/studentRoutes');
-const staffRoutes = require("./routes/staffRoutes");
-const hodRoutes = require("./routes/hodRoutes");
-const sectionRoutes = require('./routes/sectionRoutes');
-const principalRoutes = require('./routes/principalRoutes');
+dotenv.config();
 
 const app = express();
 app.use(cors({ origin: 'http://localhost:5173', methods: 'GET,POST,PUT,DELETE' }));
 app.use(express.json());
-dotenv.config();
 
+// ✅ Register ALL models here before sync
+require('./models/student');
+require('./models/department'); // <-- add this
+require('./models/staff');      // add others as needed
+require('./models/section');    // ...
+// Add every model file you have that defines a Sequelize model
+
+// ✅ Sync models and start server
 sequelize.sync({ alter: true }).then(() => {
   console.log('Database connected and synced');
 
-  app.use('/api/auth', authRoutes);
-  app.use('/api/admin', adminRoutes);
-  app.use('/api/departments', departmentRoutes);
-  app.use('/api/student', studentRoutes);
-  app.use("/api/staff", staffRoutes);
-  app.use('/api/hod', hodRoutes);
-  app.use('/api/sections', sectionRoutes);
-  app.use('/api/overview', principalRoutes);
-
-  
+  app.use('/api/auth', require('./routes/authRoutes'));
+  app.use('/api/admin', require('./routes/adminRoutes'));
+  app.use('/api/departments', require('./routes/departmentRoutes'));
+  app.use('/api/student', require('./routes/studentRoutes'));
+  app.use('/api/staff', require('./routes/staffRoutes'));
+  app.use('/api/hod', require('./routes/hodRoutes'));
+  app.use('/api/sections', require('./routes/sectionRoutes'));
+  app.use('/api/overview', require('./routes/principalRoutes'));
 
   app.listen(process.env.PORT || 5000, () => {
     console.log(`Server running on port ${process.env.PORT || 5000}`);
