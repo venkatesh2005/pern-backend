@@ -6,7 +6,7 @@ const sequelize = require('./config/db');
 dotenv.config();
 
 const app = express();
-app.use(cors({ origin: 'http://localhost:5173', methods: 'GET,POST,PUT,DELETE' }));
+app.use(cors({ origin: 'https://pern-frontend.vercel.app', methods: 'GET,POST,PUT,DELETE' }));
 app.use(express.json());
 
 // ✅ Register ALL models here before sync
